@@ -70,7 +70,10 @@ export default function App() {
           <h1>Remix Contacts Tutorial</h1>
           <div>
             <Form id="search-form" role="search"
-              onChange={(event) => submit(event.currentTarget)}>
+              onChange={(event) => {
+                submit(event.currentTarget, { replace: !(q == null) })
+              }}
+            >
               <input
                 id="q"
                 aria-label="Search contacts"
@@ -103,6 +106,8 @@ export default function App() {
                       ) : (
                         <i>No Name</i>
                       )}
+                      {' '}
+                      {contact.favorite ? <span>★</span> : null}
                     </NavLink>
                   </li>
                 ))}
