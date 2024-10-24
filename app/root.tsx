@@ -4,12 +4,13 @@ import {
   Link,
   Links,
   Meta,
-  NavLink,
   Outlet,
+  NavLink,
   Scripts,
   ScrollRestoration,
   useLoaderData,
-  useNavigation
+  useNavigation,
+  useSubmit
 } from "@remix-run/react";
 
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
@@ -43,6 +44,10 @@ export const action = async () => {
 export default function App() {
   const { contacts, q } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
+  const submit = useSubmit();
+  const searching =
+    navigation.location &&
+    new URLSearchParams(navigation.location.search).has("q");
 
   // keep DOM in sync with query params "q"
   useEffect(() => {
@@ -51,7 +56,6 @@ export default function App() {
       input.value = q || "";
     }
   }, [q]);
-  console.log('q =', q)
 
   return (
     <html lang="en">
@@ -65,16 +69,18 @@ export default function App() {
         <div id="sidebar">
           <h1>Remix Contacts Tutorial</h1>
           <div>
-            <Form id="search-form" role="search">
+            <Form id="search-form" role="search"
+              onChange={(event) => submit(event.currentTarget)}>
               <input
                 id="q"
                 aria-label="Search contacts"
+                className={searching ? "loading" : ""}
                 placeholder="Search"
                 type="search"
                 name="q"
-                defaultValue={q}
+                defaultValue={q || ''}
               />
-              <div id="search-spinner" aria-hidden hidden={true} />
+              <div id="search-spinner" aria-hidden hidden={!searching} />
             </Form>
             <Form method="post">
               <button type="submit">New</button>
@@ -106,7 +112,8 @@ export default function App() {
             )}
           </nav>
         </div>
-        <div id="detail" className={navigation.state === 'loading' ? 'loading' : ''}>
+        <div id="detail" className={
+          navigation.state === 'loading' && !searching ? 'loading' : ''}>
           <Outlet />
         </div>
         <ScrollRestoration />
