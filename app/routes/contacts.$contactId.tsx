@@ -1,4 +1,4 @@
-import { Form, useFetcher, useLoaderData } from "@remix-run/react";
+import { Form, Outlet, useFetcher, useLoaderData } from "@remix-run/react";
 import type { FunctionComponent } from "react";
 
 import type { ContactRecord } from "../data";
@@ -12,11 +12,11 @@ import invariant from "tiny-invariant";
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   invariant(params.contactId, "contactId is required");
   const contact = await getContact(params.contactId)
-  console.log(contact)
+  // console.log(contact)
   if (!contact) {
     throw new Response("Not Found", { status: 404 });
   }
-  console.log(contact)
+  // console.log(contact)
   return json({ contact });
 };
 
@@ -34,7 +34,7 @@ export const action = async ({
 
 export default function Contact() {
   const { contact } = useLoaderData<typeof loader>();
-  console.log(contact)
+  // console.log(contact)
 
   return (
     <div id="contact">
